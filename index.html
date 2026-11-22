@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#24412B">
+<title>Tarjeta del vendedor</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--hoja:#24412B;--brote:#8DB255;--arandano:#3C4C8A;--tierra:#4A3B2E;--luz:#F6F8EF;--linea:#d9dfcc}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font:400 16px/1.5 Figtree,system-ui,sans-serif;color:var(--tierra);background:var(--luz);padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+h1,h2{font-family:'Bricolage Grotesque',Figtree,sans-serif;color:var(--hoja);line-height:1.1}
+header{background:var(--hoja);color:#fff;padding:calc(28px + env(safe-area-inset-top)) 20px 28px}
+header h1{color:#fff;font-size:1.7rem}
+header p{opacity:.85;margin-top:6px}
+main{padding:20px;display:grid;gap:14px;max-width:560px;margin:0 auto}
+h2{font-size:1.05rem;margin:10px 0 0}
+.it{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;background:#fff;border-radius:14px;padding:12px;border:1px solid var(--linea)}
+.th{width:72px;height:72px;border-radius:10px;background:var(--hoja) center/cover;display:grid;place-items:center;color:var(--brote);font-size:1.6rem}
+.it b{display:block;color:var(--hoja)}
+.it small{opacity:.75}
+.row{display:flex;gap:8px;margin-top:8px}
+.b{flex:1;min-height:48px;border:0;border-radius:999px;font:600 .95rem Figtree,sans-serif;cursor:pointer;background:var(--brote);color:var(--hoja);transition:transform .12s,background .2s}
+.b.o{background:transparent;border:1.5px solid var(--hoja);color:var(--hoja)}
+.b:active{transform:scale(.95)}
+.b.ok{background:var(--arandano);color:#fff}
+.b[disabled]{opacity:.45}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--luz);border-top:1px solid var(--linea)}
+.bar .b{min-height:52px}
+#vw{position:fixed;inset:0;background:var(--luz);transform:translateY(100%);transition:transform .3s ease;z-index:5;display:flex;flex-direction:column;visibility:hidden}
+#vw.on{transform:none;visibility:visible}
+#vw .hd{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:var(--hoja);color:#fff;font-weight:600}
+#vw .hd button{min-width:48px;min-height:48px;border:0;background:none;color:#fff;font-size:1.6rem}
+#bd{flex:1;overflow:auto;padding:16px;display:grid;gap:12px;align-content:start}
+#bd img,#bd video{width:100%;border-radius:12px;display:block;background:#000}
+:focus-visible{outline:3px solid var(--arandano);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#vw{transition:none}.b{transition:none}}
+</style>
+</head>
+<body>
+<header><h1>Kit del vendedor</h1><p id="who">Macetas técnicas para arándanos</p></header>
+<main id="m"></main>
+<div class="bar"><button class="b" id="main">Compartir la web</button><button class="b o" disabled>Mis leads · pronto</button></div>
+<div id="vw" aria-hidden="true"><div class="hd"><button id="x" aria-label="Volver">&larr;</button><span id="vt"></span></div><div id="bd"></div></div>
+<script>
+const CONFIG={vendedor:"Nombre del vendedor",codigo:"vendedor1"};
+const BASE=new URL("../",location.href).href,$=s=>document.querySelector(s);
+let code=CONFIG.codigo;
+try{const p=new URLSearchParams(location.search).get("v");if(p)localStorage.setItem("v",p);code=localStorage.getItem("v")||code}catch(_){}
+$("#who").textContent=CONFIG.vendedor+" · macetas técnicas para arándanos";
+const link=r=>BASE+r+(r.includes("?")?"&":"?")+"v="+encodeURIComponent(code);
+const ITEMS=[
+ {g:"Para enviar al cliente",id:"web",t:"La web",d:"Calcula su campo y cotiza",ic:"&#9679;",ruta:"",msg:"Mira esta web de macetas técnicas para arándanos y calcula cuántas necesitas:"},
+ {id:"ficha",t:"Ficha técnica",d:"PDF",ic:"PDF",ruta:"files/ficha-tecnica.pdf",files:["files/ficha-tecnica.pdf"],msg:"Te comparto la ficha técnica de la maceta:"},
+ {id:"fotos",t:"Fotos de las macetas",d:"3 fotos",thumb:"img/maceta-1.webp",ruta:"",files:["img/maceta-1.webp","img/maceta-2.webp","img/maceta-3.webp"],msg:"Fotos de nuestras macetas técnicas:"},
+ {g:"Videos",id:"fab",t:"Cómo se fabrica",d:"De la inyección a la maceta",thumb:"img/fabricacion.webp",ruta:"videos/fabricacion.mp4",video:1,msg:"Mira cómo se fabrica la maceta:"},
+ {id:"res",t:"Prueba de resistencia",d:"Pronto",thumb:"img/resistencia.webp",ruta:"videos/resistencia.mp4",video:1,msg:"Mira cómo resiste la maceta:"}
+];
+const m=$("#m");
+ITEMS.forEach(i=>{
+ if(i.g){const h=document.createElement("h2");h.textContent=i.g;m.append(h)}
+ const e=document.createElement("div");e.className="it";
+ e.innerHTML=`<div class="th" ${i.thumb?`style="background-image:url('../${i.thumb}')"`:""}>${i.thumb?(i.video?"&#9654;":""):i.ic}</div><div><b>${i.t}</b><small>${i.d}</small><div class="row"><button class="b o">Ver</button><button class="b">Compartir</button></div></div>`;
+ const [v,s]=e.querySelectorAll("button");v.onclick=()=>ver(i);s.onclick=()=>compartir(i,s);m.append(e);
+});
+function ok(b){const t=b.textContent;b.textContent="Enviado";b.classList.add("ok");navigator.vibrate&&navigator.vibrate(12);setTimeout(()=>{b.textContent=t;b.classList.remove("ok")},1800)}
+const wa=t=>"https://wa.me/?text="+encodeURIComponent(t);
+const mob=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+async function compartir(i,b){
+ const url=link(i.ruta);
+ try{
+  if(mob&&i.files&&navigator.canShare){
+   const fs=await Promise.all(i.files.map(async p=>{const r=await fetch(BASE+p);if(!r.ok)throw 0;const bl=await r.blob();return new File([bl],p.split("/").pop(),{type:bl.type})}));
+   if(navigator.canShare({files:fs})){await navigator.share({files:fs,text:i.msg+" "+link("")});return ok(b)}
+  }
+  if(mob&&navigator.share){await navigator.share({text:i.msg+" "+url});return ok(b)}
+  window.open(wa(i.msg+" "+url),"_blank");ok(b);
+ }catch(e){if(e&&e.name==="AbortError")return;window.open(wa(i.msg+" "+url),"_blank")}
+}
+$("#main").onclick=()=>compartir(ITEMS[0],$("#main"));
+const vw=$("#vw"),bd=$("#bd");
+function ver(i){
+ if(i.id==="web")return window.open(link(""),"_blank");
+ if(i.id==="ficha")return window.open(BASE+i.ruta,"_blank");
+ $("#vt").textContent=i.t;bd.innerHTML="";
+ if(i.video){const v=document.createElement("video");v.src=BASE+i.ruta;v.controls=true;v.playsInline=true;v.preload="metadata";if(i.thumb)v.poster=BASE+i.thumb;v.onerror=()=>{bd.innerHTML="<p>Este video aún no está disponible.</p>"};bd.append(v)}
+ else i.files.forEach(p=>{const im=document.createElement("img");im.src=BASE+p;im.alt=i.t;im.loading="lazy";im.onerror=()=>im.remove();bd.append(im)});
+ vw.classList.add("on");vw.setAttribute("aria-hidden","false");
+}
+$("#x").onclick=()=>{vw.classList.remove("on");vw.setAttribute("aria-hidden","true");const v=bd.querySelector("video");v&&v.pause()};
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

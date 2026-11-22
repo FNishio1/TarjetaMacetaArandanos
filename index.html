@@ -52,10 +52,10 @@ const BASE=new URL("../",location.href).href,$=s=>document.querySelector(s);
 let code=CONFIG.codigo;
 try{const p=new URLSearchParams(location.search).get("v");if(p)localStorage.setItem("v",p);code=localStorage.getItem("v")||code}catch(_){}
 $("#who").textContent=CONFIG.vendedor+" · macetas técnicas para arándanos";
-const link=r=>BASE+r+(r.includes("?")?"&":"?")+"v="+encodeURIComponent(code);
+const link=r=>/^https?:\/\//i.test(r)?r:BASE+r+(r.includes("?")?"&":"?")+"v="+encodeURIComponent(code);
 const ITEMS=[
  {g:"Para enviar al cliente",id:"web",t:"La web",d:"Calcula su campo y cotiza",ic:"&#9679;",ruta:"https://fnishio1.github.io/MacetaArandanos/",msg:"Mira esta web de macetas técnicas para arándanos y calcula cuántas necesitas:"},
- {id:"ficha",t:"Ficha técnica",d:"PDF",ic:"PDF",ruta:"assets/ficha-tecnica.pdf",files:"ficha-tecnica-editable.pdf",msg:"Te comparto la ficha técnica de la maceta:"},
+ {id:"ficha",t:"Ficha técnica",d:"PDF",ic:"PDF",ruta:"assets/ficha-tecnica.pdf",files:["ficha-tecnica-editable.pdf"],msg:"Te comparto la ficha técnica de la maceta:"},
  {id:"fotos",t:"Fotos de las macetas",d:"3 fotos",thumb:"img/maceta-1.webp",ruta:"",files:["img/maceta-1.webp","img/maceta-2.webp","img/maceta-3.webp"],msg:"Fotos de nuestras macetas técnicas:"},
  {g:"Videos",id:"fab",t:"Cómo se fabrica",d:"De la inyección a la maceta",thumb:"img/fabricacion.webp",ruta:"videos/fabricacion.mp4",video:1,msg:"Mira cómo se fabrica la maceta:"},
  {id:"res",t:"Prueba de resistencia",d:"Pronto",thumb:"img/resistencia.webp",ruta:"videos/resistencia.mp4",video:1,msg:"Mira cómo resiste la maceta:"}
